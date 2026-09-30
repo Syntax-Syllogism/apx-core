@@ -1,7 +1,7 @@
 {
   "name": "@syntax-syllogism/apx-core",
   "description": "Shared apx engine: the AEP code generators and dead-code analysis behind the sf apx CLI plugin and the Apx VS Code extension.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Jake Richter <j.p.richter@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/Syntax-Syllogism/apx-core#readme",
@@ -55,7 +55,9 @@
   },
   "dependencies": {
     "@salesforce/core": "^8",
-    "zod": "^4"
+    "zod": "^4",
+    "eta": "^4.1.0",
+    "pluralize": "^8"
   },
   "devDependencies": {
     "@salesforce/dev-config": "^4.1.0",
@@ -72,6 +74,7 @@
     "prettier": "^2.8.8",
     "sinon": "^10.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "@types/pluralize": "^0.0.33"
   }
 }

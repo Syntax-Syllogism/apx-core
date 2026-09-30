@@ -27,6 +27,23 @@ apx-core is the shared engine for both front ends:
 It follows the common `-core` library pattern for sf plugins, as a single
 package rather than a monorepo.
 
+## Implementation scope
+
+The current library exposes generation building blocks and dead-code analysis
+functions through `src/index.ts`. See [AEP generation](../aep-generation.md) and
+[dead-code analysis](../dead-code-analysis.md) for their as-built contracts.
+Consumer integration in the table above describes the intended architecture.
+Per-command use cases, zod options schemas, UI hints, `requiresOrg` declarations,
+progress callbacks and cancellation signals are design goals; the current
+exports do not provide them.
+
+Generation plans contain artifact IDs, relative paths and rendered strings,
+without file-existence information. `GenerationEngine.execute` checks existence
+when applying a plan and accepts `overwrite`, `skip` or `error`. Its dry run
+reports all planned paths without checking existence. Destructive manifests
+have pure XML renderers and a separate writer with dry-run support; the writer
+always overwrites and has no overwrite-policy option.
+
 ## Decisions
 
 | # | Decision |
@@ -42,8 +59,9 @@ package rather than a monorepo.
 
 ## Rules
 
-Every module in apx-core follows these rules. When code is extracted from the
-plugin, the parts that comply move and the rest stays behind.
+These rules define the target boundaries. The implementation scope above records
+which contracts are available today and where the current API differs. When code
+is extracted from the plugin, interactive behavior stays in the caller.
 
 1. **No CLI framework.** No `@oclif/core`, `@salesforce/sf-plugins-core` or
    `@inquirer/*`. No `Flags`, `ux`, spinners, tables or interactive prompts.
@@ -80,9 +98,10 @@ plugin, the parts that comply move and the rest stays behind.
 - **Project root is explicit.** Relative output paths and the project's
   `sourceApiVersion` are resolved against a `projectRoot` that the caller
   passes in. apx-core never assumes `process.cwd()`, because an editor's
-  extension host is not running in the workspace. When `projectRoot` is
-  omitted, the sfdx project that contains the current directory is used,
-  which is the CLI's behaviour.
+  extension host is not running in the workspace. The project helpers accept
+  an optional `projectRoot`; when omitted,
+  Salesforce project discovery uses the current directory for CLI compatibility.
+  Editor callers must pass a root to avoid depending on the host directory.
 - **Templates are code.** Apex templates are TypeScript string modules
   rendered with eta, not files read at runtime, so the package bundles
   cleanly.

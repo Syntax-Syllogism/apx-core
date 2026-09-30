@@ -1,3 +1,14 @@
+/** Stable codes thrown by the extracted AEP and dead-code domains. */
+export type ApxErrorCode =
+  | 'duplicate-path'
+  | 'file-exists'
+  | 'write-failed'
+  | 'template-missing'
+  | 'template-empty'
+  | 'test-pairing-invariant'
+  | 'sobject-not-found'
+  | 'describe-failed';
+
 /**
  * Base error for everything apx-core throws on purpose.
  *
