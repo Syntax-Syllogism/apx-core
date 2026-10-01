@@ -64,8 +64,9 @@ methods, field injection, actions and criteria use AT4DX. Output folders default
 to `generated-files`. Field injection has no API-version option. Aggregate
 generation defaults its selection flags to false and requires at least one of
 `selector`, `domain` or `unitOfWork`. Dead analysis requires `classes: true`;
-`deadOnly` requires `destructiveManifest: true`. `fields` and `ignore` are lists
-of trimmed, nonempty strings. Other string options do not generally validate
+`deadOnly` is accepted without `destructiveManifest` but has no effect unless
+a manifest is requested. `fields` and `ignore` are lists of trimmed, nonempty
+strings. Other string options do not generally validate
 Apex identifiers or API-version format.
 
 Invalid input throws `ZodError`. Empty aggregate selection throws `ZodError`

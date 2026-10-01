@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `dead` accepts `deadOnly` without `destructiveManifest` again; it has no effect without a manifest, as in the pre-extraction `apx` plugin
+- The human dead-code report reproduces oclif's `ux.table` layout (box-drawn borders, Title Case headers, a blank line after each table) and no longer indents binding-source rows
+
+## [0.3.1] - 2026-10-01
+
+### Fixed
+
+- Restored CLI parity for `apx dead` command with `--dead-only` flag and `ux.table` report layout
+
 ## [0.3.0] - 2026-10-01
 
 ### Added
@@ -24,4 +35,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Internal maintenance and tooling updates
-

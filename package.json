@@ -1,7 +1,7 @@
 {
   "name": "@syntax-syllogism/apx-core",
   "description": "Shared apx engine: the AEP code generators and dead-code analysis behind the sf apx CLI plugin and the Apx VS Code extension.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Jake Richter <j.p.richter@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/Syntax-Syllogism/apx-core#readme",

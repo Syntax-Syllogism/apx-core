@@ -19,7 +19,7 @@ export const renderDeadCodeReport = (result: DeadCodeResult, options: DeadReport
     lines.push(`Warning: ${formatText(deadText[key], ...values)}`);
   };
   const table = (title: string, columns: string[], rows: Array<Record<string, string | number>>): void => {
-    if (rows.length) lines.push(title, renderTable(columns, rows));
+    if (rows.length) lines.push(title, renderTable(columns, rows), '');
   };
   for (const source of result.bindingSources) {
     if (source.available) info('info.bindingSourceRow', source.object, source.recordCount);

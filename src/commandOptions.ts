@@ -123,8 +123,6 @@ export const deadOptionsSchema = z
         path: ['classes'],
         message: options.destructiveManifest ? '--destructive-manifest requires --classes.' : 'Specify --classes.',
       });
-    if (options.deadOnly && !options.destructiveManifest)
-      ctx.addIssue({ code: 'custom', path: ['deadOnly'], message: '--dead-only requires --destructive-manifest.' });
   });
 
 export type GenerateOptions = z.output<typeof generateOptionsSchema>;

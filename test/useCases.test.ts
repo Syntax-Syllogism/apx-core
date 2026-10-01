@@ -163,12 +163,16 @@ describe('command use cases', () => {
     for (const [options, message] of [
       [{}, 'Specify --classes.'],
       [{ destructiveManifest: true }, '--destructive-manifest requires --classes.'],
-      [{ classes: true, deadOnly: true }, '--dead-only requires --destructive-manifest.'],
     ] as const) {
       const invalid = dead.descriptor.optionsSchema.safeParse(options);
       if (invalid.success) throw new Error('Expected dead validation');
       expect(describeError(invalid.error).title).to.equal(message);
     }
+    // --dead-only without --destructive-manifest is accepted and has no effect, as in the pre-extraction plugin.
+    expect(dead.descriptor.optionsSchema.parse({ classes: true, deadOnly: true })).to.include({
+      deadOnly: true,
+      destructiveManifest: false,
+    });
   });
 
   it('requires connections before org queries and rejects an empty aggregate', async () => {
@@ -389,6 +393,12 @@ describe('command use cases', () => {
     const withoutManifest = await dead.run(stub.conn, { ...options, destructiveManifest: false });
     expect(withoutManifest).not.to.have.property('manifest');
     expect(await writeDeadCodeManifest(withoutManifest, root)).to.deep.equal({});
+    const deadOnlyWithoutManifest = await dead.run(stub.conn, {
+      ...options,
+      destructiveManifest: false,
+      deadOnly: true,
+    });
+    expect(deadOnlyWithoutManifest).to.deep.equal(withoutManifest);
     const deadOnly = await dead.run(stub.conn, { ...options, deadOnly: true, apiVersion: '61.0' });
     expect(deadOnly.manifest?.destructiveChangesXml).to.contain('<version>61.0</version>');
   });
@@ -571,7 +581,9 @@ describe('command use cases', () => {
     const invalid = z.object({ a: z.string(), b: z.string() }).safeParse({ a: 1, b: 2 });
     if (invalid.success) throw new Error('Expected invalid options');
     expect(describeError(invalid.error).detail).to.equal(invalid.error.issues[1].message);
-    expect(renderTable(['A', 'B'], [{ A: 'x' }])).to.equal('A  B\n-  -\nx');
+    expect(renderTable(['A', 'B'], [{ A: 'x' }])).to.equal(
+      ['┌───┬───┐', '│ A │ B │', '├───┼───┤', '│ x │   │', '└───┴───┘'].join('\n')
+    );
   });
 
   it('renders a dead report and manifest preview without modifying the result', async () => {
@@ -581,7 +593,7 @@ describe('command use cases', () => {
     );
     const before = JSON.stringify(result);
     const report = renderDeadCodeReport(result);
-    expect(report).to.contain('DEAD\nROUND  CLASS');
+    expect(report).to.contain('DEAD\n┌───────┬');
     expect(report).to.contain('Scanned 1 classes over 1 round(s): 1 dead, 0 test-only, 0 retained, 0 suppressed.');
     const preview = renderDeadCodeReport(result, { manifestDir: '/project/dead-code', dryRun: true, deadOnly: true });
     expect(preview).to.contain('Would write a destructive manifest for 1 classes to /project/dead-code');

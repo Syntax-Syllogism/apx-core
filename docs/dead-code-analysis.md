@@ -20,7 +20,8 @@ between phases. In-flight queries finish before cancellation is observed.
 
 With `destructiveManifest: true`, the result adds `manifest: {
 destructiveChangesXml, packageXml, members }`. Member selection retains the
-existing test-pairing invariant and honors `deadOnly`. The XML uses explicit API
+existing test-pairing invariant and honors `deadOnly`; without a manifest,
+`deadOnly` is accepted and ignored. The XML uses explicit API
 version, connection version, then the default. No output path is resolved while
 reading, so analysis works without a local Salesforce project.
 
@@ -30,6 +31,8 @@ or `wouldWrite` shape. It returns `{}` for absent or empty manifests. Callers ca
 merge this into their JSON report. `renderDeadCodeReport(result, {
 includeSuppressed, deadOnly, username, manifestDir, dryRun })` returns the pure
 human report, including warnings, tables, summary and deployment guidance.
+Finding tables reproduce oclif's `ux.table` layout: box-drawn borders, Title
+Case headers and a blank line after each table, without ANSI styling.
 
 ## Inventory, bindings and graph
 

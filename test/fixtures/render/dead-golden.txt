@@ -1,0 +1,44 @@
+Binding sources consulted:
+ApplicationFactory_ServiceBinding__mdt  not present in org
+ApplicationFactory_SelectorBinding__mdt  not present in org
+ApplicationFactory_DomainBinding__mdt  not present in org
+DomainProcessBinding__mdt  not present in org
+Warning: No AT4DX binding objects were found in this org, so no dependency-injection bindings could
+be resolved. If this is an AT4DX project, injected implementations will be reported as
+dead.
+Warning: Class names held as strings outside the known AT4DX binding objects are invisible to
+dependency data. Classes reached only via Type.forName, System.schedule from anonymous
+Apex, or a bespoke config table are reported as dead even when they are live. Review
+before deleting.
+DEAD
+┌───────┬──────────────────────┬──────┬───────────────────────┐
+│ Round │ Class                │ Risk │ Reason                │
+├───────┼──────────────────────┼──────┼───────────────────────┤
+│ 1     │ PluginSmokeReference │      │ no inbound references │
+│ 1     │ PluginSmokeUserSeed  │      │ no inbound references │
+│ 1     │ PSM_Apx_DeadLeaf     │      │ no inbound references │
+└───────┴──────────────────────┴──────┴───────────────────────┘
+
+TEST-ONLY
+┌───────┬─────────────────────────┬─────────────────────────────┐
+│ Round │ Class                   │ Tests                       │
+├───────┼─────────────────────────┼─────────────────────────────┤
+│ 1     │ PSM_Apx_TestOnlySubject │ PSM_Apx_TestOnlySubjectTest │
+└───────┴─────────────────────────┴─────────────────────────────┘
+
+TEST-OF-DEAD
+┌───────┬─────────────────────────────┬─────────────────────────┐
+│ Round │ Class                       │ Test Of                 │
+├───────┼─────────────────────────────┼─────────────────────────┤
+│ 1     │ PSM_Apx_TestOnlySubjectTest │ PSM_Apx_TestOnlySubject │
+└───────┴─────────────────────────────┴─────────────────────────┘
+
+RETAINED
+┌─────────────────────────┬─────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Class                   │ Test                        │ Also Covers                                                                                                                                                                                                                                                                                                                                                 │
+├─────────────────────────┼─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ wdn_ConformanceFixtures │ wdn_ConformanceFixturesTest │ wdn_AppFactory, wdn_IDmlGateway, wdn_IGroupMemberSelector, wdn_IGroupSelector, wdn_IPermissionSetAssignmentSelector, wdn_IPermissionSetGroupSelector, wdn_IPermissionSetSelector, wdn_IPersonaAssignmentSelector, wdn_IPersonaComponentSelector, wdn_IProvisionedGrantSelector, wdn_ReconcilerService, wdn_ReconciliationException, wdn_ReconciliationScope │
+│ wdn_ConformanceFixtures │ wdn_ReconcilerServiceTest   │ wdn_AppFactory, wdn_IDmlGateway, wdn_IGroupMemberSelector, wdn_IGroupSelector, wdn_IPermissionSetAssignmentSelector, wdn_IPermissionSetGroupSelector, wdn_IPermissionSetSelector, wdn_IPersonaAssignmentSelector, wdn_IPersonaComponentSelector, wdn_IProvisionedGrantSelector, wdn_ReconcilerService, wdn_ReconciliationException, wdn_ReconciliationScope │
+└─────────────────────────┴─────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Scanned 70 classes over 1 round(s): 3 dead, 1 test-only, 1 retained, 21 suppressed.

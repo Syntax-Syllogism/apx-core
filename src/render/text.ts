@@ -8,8 +8,8 @@ export const FIELD_INJECTION_BINDING_REVIEW =
 export const deadText = {
   'info.summary': 'Scanned %s classes over %s round(s): %s dead, %s test-only, %s retained, %s suppressed.',
   'info.bindingSources': 'Binding sources consulted:',
-  'info.bindingSourceRow': '  %s  %s',
-  'info.bindingSourceMissing': '  %s  not present in org',
+  'info.bindingSourceRow': '%s  %s',
+  'info.bindingSourceMissing': '%s  not present in org',
   'info.manifestWritten': 'Wrote a destructive manifest for %s classes to %s',
   'info.nextStep': 'Review the manifest, then deploy it with:',
   'info.dryRunManifest': 'Would write a destructive manifest for %s classes to %s',
