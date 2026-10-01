@@ -7,6 +7,30 @@ rendering. Callers supply a structural `DeadConnection` with
 `query`; the library does not resolve an org. Query failures propagate except
 for missing binding objects described below.
 
+## Command use case
+
+`dead` has `kind: 'read'` and a required-org descriptor. Its zod schema validates
+`classes: true`, manifest dependencies, an optional API-version string and a list
+of nonempty ignore patterns. It does not validate API-version format. See
+[command use cases](command-use-cases.md) for the shared descriptor and schema
+contract. `run(conn,
+options, ctx?)` performs no writes. It reports `inventory`, `bindings`,
+`dependencies`, `classify`, then `manifest` (when requested), checking cancellation
+between phases. In-flight queries finish before cancellation is observed.
+
+With `destructiveManifest: true`, the result adds `manifest: {
+destructiveChangesXml, packageXml, members }`. Member selection retains the
+existing test-pairing invariant and honors `deadOnly`. The XML uses explicit API
+version, connection version, then the default. No output path is resolved while
+reading, so analysis works without a local Salesforce project.
+
+`writeDeadCodeManifest(result, outputBase, { dryRun? })` writes exactly this
+snapshot under `dead-code`, returning the existing `manifestDir`, `manifestFiles`
+or `wouldWrite` shape. It returns `{}` for absent or empty manifests. Callers can
+merge this into their JSON report. `renderDeadCodeReport(result, {
+includeSuppressed, deadOnly, username, manifestDir, dryRun })` returns the pure
+human report, including warnings, tables, summary and deployment guidance.
+
 ## Inventory, bindings and graph
 
 `fetchClassInventory(conn)` fetches active Apex classes without a namespace,

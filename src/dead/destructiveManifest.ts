@@ -64,27 +64,41 @@ export const renderEmptyPackage = (apiVersion: string): string => `<?xml version
 export const writeDestructiveManifest = async (
   result: DeadCodeResult,
   options: ManifestOptions
-): Promise<ManifestResult> => {
-  const findings = membersFor(result, options.deadOnly);
-  if (!findings.length) return {};
+): Promise<ManifestResult> =>
+  writeRenderedManifest(
+    renderManifest(result, options.apiVersion, options.deadOnly),
+    options.outputBase,
+    options.dryRun
+  );
 
-  const dir = path.join(options.outputBase, 'dead-code');
+export type RenderedDeadManifest = { destructiveChangesXml: string; packageXml: string; members: string[] };
+
+export const renderManifest = (result: DeadCodeResult, apiVersion: string, deadOnly: boolean): RenderedDeadManifest => {
+  const members = membersFor(result, deadOnly).map(({ name }) => name);
+  return {
+    members,
+    destructiveChangesXml: renderDestructiveChanges(members, apiVersion),
+    packageXml: renderEmptyPackage(apiVersion),
+  };
+};
+
+export const writeRenderedManifest = async (
+  manifest: RenderedDeadManifest | undefined,
+  outputBase: string,
+  dryRun: boolean
+): Promise<ManifestResult> => {
+  if (!manifest?.members.length) return {};
+
+  const dir = path.join(outputBase, 'dead-code');
   const files = [path.join(dir, 'destructiveChanges.xml'), path.join(dir, 'package.xml')];
-  if (options.dryRun) return { manifestDir: dir, wouldWrite: files };
+  if (dryRun) return { manifestDir: dir, wouldWrite: files };
 
   let absolutePath = files[0];
   try {
     await mkdir(dir, { recursive: true });
-    await writeFile(
-      absolutePath,
-      renderDestructiveChanges(
-        findings.map(({ name }) => name),
-        options.apiVersion
-      ),
-      'utf8'
-    );
+    await writeFile(absolutePath, manifest.destructiveChangesXml, 'utf8');
     absolutePath = files[1];
-    await writeFile(absolutePath, renderEmptyPackage(options.apiVersion), 'utf8');
+    await writeFile(absolutePath, manifest.packageXml, 'utf8');
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);
     throw new ApxError('write-failed', `Failed to write artifact "${absolutePath}": ${message}`, {

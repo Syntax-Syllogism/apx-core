@@ -1,5 +1,8 @@
 /** Stable codes thrown by the extracted AEP and dead-code domains. */
 export type ApxErrorCode =
+  | 'org-required'
+  | 'nothing-selected'
+  | 'cancelled'
   | 'duplicate-path'
   | 'file-exists'
   | 'write-failed'

@@ -1,0 +1,103 @@
+{
+  "scanned": 8,
+  "rounds": 50,
+  "withoutSymbolTable": 2,
+  "bindingSources": [
+    {
+      "object": "Available__mdt",
+      "available": true,
+      "recordCount": 1
+    },
+    {
+      "object": "Missing__mdt",
+      "available": false,
+      "recordCount": 0
+    }
+  ],
+  "dead": [
+    {
+      "id": "d1",
+      "name": "Unused",
+      "bucket": "dead",
+      "round": 2,
+      "reason": "No inbound references",
+      "referrers": [],
+      "risk": "di",
+      "riskDetail": "Unbound interface implementation"
+    }
+  ],
+  "testOnly": [
+    {
+      "id": "d2",
+      "name": "TestedUnused",
+      "bucket": "test-only",
+      "round": 1,
+      "reason": "No inbound references",
+      "referrers": [
+        {
+          "id": "t1",
+          "name": "UnusedTest",
+          "type": "ApexClass"
+        }
+      ]
+    }
+  ],
+  "testOfDead": [
+    {
+      "id": "t1",
+      "name": "UnusedTest",
+      "bucket": "test-of-dead",
+      "round": 1,
+      "reason": "No inbound references",
+      "referrers": [],
+      "subject": {
+        "id": "d2",
+        "name": "TestedUnused",
+        "type": "ApexClass"
+      }
+    }
+  ],
+  "retained": [
+    {
+      "id": "r1",
+      "name": "Retained",
+      "bucket": "retained",
+      "round": 1,
+      "reason": "No inbound references",
+      "referrers": [
+        {
+          "id": "t1",
+          "name": "UnusedTest",
+          "type": "ApexClass"
+        }
+      ],
+      "blockedBy": [
+        {
+          "id": "l1",
+          "name": "Live",
+          "type": "ApexClass"
+        }
+      ]
+    }
+  ],
+  "suppressed": [
+    {
+      "id": "s1",
+      "name": "Zulu",
+      "bucket": "suppressed",
+      "round": 1,
+      "reason": "No inbound references",
+      "referrers": [],
+      "wouldBeDead": false
+    },
+    {
+      "id": "s2",
+      "name": "Alpha",
+      "bucket": "suppressed",
+      "round": 1,
+      "reason": "No inbound references",
+      "referrers": [],
+      "wouldBeDead": true
+    }
+  ]
+}

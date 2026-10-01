@@ -33,7 +33,13 @@ export type PlannedArtifact = { id: ArtifactId; relativePath: string; content: s
 export type GenerationPlan = { artifacts: PlannedArtifact[] };
 
 export type OverwritePolicy = 'error' | 'skip' | 'overwrite';
-export type EngineOptions = { baseDir: string; dryRun?: boolean; overwrite?: OverwritePolicy };
+export type EngineOptions = {
+  baseDir: string;
+  dryRun?: boolean;
+  overwrite?: OverwritePolicy;
+  signal?: AbortSignal;
+  onFile?: (event: { absolutePath: string; status: 'created' | 'skipped'; done: number; total: number }) => void;
+};
 
 export type GenerationManifest = {
   created: string[];

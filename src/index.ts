@@ -2,6 +2,48 @@
 // removals and signature changes are breaking. test/index.test.ts pins keys.
 export { ApxError, isApxError, type ApxErrorCode } from './errors.js';
 
+export {
+  uiHints,
+  checkCancelled,
+  startProgress,
+  endProgress,
+  requireConnection,
+  type ProgressEvent,
+  type UseCaseContext,
+  type ApxUseCaseContext,
+  type GenerationApplyContext,
+  type UiHint,
+  type OrgRequirement,
+  type CommandDescriptor,
+  type ReadUseCase,
+  type WriteUseCase,
+  type UseCase,
+} from './useCase.js';
+export * from './commandOptions.js';
+export {
+  generate,
+  generateSelector,
+  generateDomain,
+  generateService,
+  generateUnitOfWork,
+  generateSelectorMethod,
+  generateSelectorFieldInjection,
+  generateAction,
+  generateCriteria,
+} from './useCases/generate.js';
+export { dead, writeDeadCodeManifest, type DeadUseCaseResult } from './useCases/dead.js';
+export { useCases, commandDescriptors } from './useCases/index.js';
+export {
+  planGeneration,
+  applyGeneration,
+  type PlannedFile,
+  type GenerationPreview,
+  type GenerationOutcome,
+} from './useCases/generation.js';
+export { renderGenerationPlan, renderGenerationResult } from './render/generation.js';
+export { renderDeadCodeReport, type DeadReportOptions } from './render/dead.js';
+export { describeError } from './render/errors.js';
+
 // AEP: model
 export type {
   Flavor,

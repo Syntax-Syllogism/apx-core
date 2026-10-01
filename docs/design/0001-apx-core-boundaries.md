@@ -29,20 +29,33 @@ package rather than a monorepo.
 
 ## Implementation scope
 
-The current library exposes generation building blocks and dead-code analysis
-functions through `src/index.ts`. See [AEP generation](../aep-generation.md) and
-[dead-code analysis](../dead-code-analysis.md) for their as-built contracts.
-Consumer integration in the table above describes the intended architecture.
-Per-command use cases, zod options schemas, UI hints, `requiresOrg` declarations,
-progress callbacks and cancellation signals are design goals; the current
-exports do not provide them.
+The library exposes generation building blocks and ten command use cases through
+`src/index.ts`. Each descriptor has a zod options schema, UI hints, a stable
+use-case ID, the colon-separated oclif CLI ID, and an org requirement. See
+[AEP generation](../aep-generation.md) and [dead-code analysis](../dead-code-analysis.md)
+for the contracts. Consumer authentication, interactive behavior and printing stay
+outside the library.
 
-Generation plans contain artifact IDs, relative paths and rendered strings,
-without file-existence information. `GenerationEngine.execute` checks existence
-when applying a plan and accepts `overwrite`, `skip` or `error`. Its dry run
-reports all planned paths without checking existence. Destructive manifests
-have pure XML renderers and a separate writer with dry-run support; the writer
-always overwrites and has no overwrite-policy option.
+Generation previews carry content and `new`/`exists` status. Apply ignores that
+status and checks the filesystem again, using exclusive creation for `skip` so a
+file appearing after preview cannot be overwritten. The engine also retains the
+lower-level `error` policy and dry-run API. Writes are sequential, with per-file
+progress and cancellation checks. Cancellation throws `cancelled` with
+`{ created }`; completed writes remain on disk.
+
+UI hints mirror the shared contract and add `folder` for output folders and
+`multiString` for arrays (`fields` and `ignore`). `classes` is a boolean, matching
+the CLI. Flavor is explicit, with no schema default. Field injection has no API
+version option because its CLI flag and generated XML have none. Empty aggregate
+selection throws `nothing-selected` before any describe query; schemas validate
+order, binding length, fieldset length, and empty fields with the CLI's English
+messages.
+
+Dead analysis runs read phases with cancellation boundaries, returning pure XML
+when requested. The separate manifest writer consumes that snapshot, preserving
+its member selection and API version without further queries or classification.
+Human renderers are ANSI-free strings; generation result rendering accepts an
+optional command ID to preserve command-specific summaries and binding guidance.
 
 ## Decisions
 
@@ -59,8 +72,8 @@ always overwrites and has no overwrite-policy option.
 
 ## Rules
 
-These rules define the target boundaries. The implementation scope above records
-which contracts are available today and where the current API differs. When code
+These rules define the library boundaries. The implementation scope above records
+the available contracts. When code
 is extracted from the plugin, interactive behavior stays in the caller.
 
 1. **No CLI framework.** No `@oclif/core`, `@salesforce/sf-plugins-core` or

@@ -8,7 +8,8 @@ apx-core is a plain Node/TypeScript library with no CLI framework dependency.
 Call its functions directly from a script, an editor extension, a CI job, or
 any other Node codebase.
 
-The package includes AEP generation plans and execution, project helpers,
+The package includes ten command use cases with zod options schemas, UI hints,
+plan/apply generation, pure human renderers, progress and cancellation, project helpers,
 and dead-code inventory, dependency analysis, classification and manifests.
 
 ## Install
@@ -23,6 +24,14 @@ Requires Node.js 22 or later.
 
 | Export | Purpose |
 | --- | --- |
+| `commandDescriptors`, `useCases` | All ten commands, keyed by stable use-case ID, with colon-separated CLI IDs, options schemas, UI hints and org requirements. |
+| `generate`, `generateSelector`, `generateDomain`, `generateService`, `generateUnitOfWork`, `generateSelectorMethod`, `generateSelectorFieldInjection`, `generateAction`, `generateCriteria` | Write use cases: `plan(conn, options, ctx?)` previews content and file existence; `apply(conn, preview, ctx?)` writes with `overwrite` or `skip`. |
+| `dead`, `writeDeadCodeManifest` | Read analysis with optional pure manifest XML; separately write the returned manifest, with dry-run support. |
+| `uiHints`, `file`, `text`, `boolean`, `enumValue` | Read or attach zod UI metadata; folder and multi-string hints support output folders and string lists. |
+| `checkCancelled`, `startProgress`, `endProgress`, `requireConnection` | Optional progress/cancellation and required-org enforcement. |
+| `planGeneration`, `applyGeneration` | Shared preview and execution helpers for generation plans. |
+| `renderGenerationPlan`, `renderGenerationResult`, `renderDeadCodeReport`, `describeError` | Pure preview, summary, report and error text. Pass `commandId` to the result renderer for command-specific CLI messages. |
+| `generateOptionsSchema`, `generateSelectorOptionsSchema`, `generateDomainOptionsSchema`, `generateServiceOptionsSchema`, `generateUnitOfWorkOptionsSchema`, `generateSelectorMethodOptionsSchema`, `generateSelectorFieldInjectionOptionsSchema`, `generateActionOptionsSchema`, `generateCriteriaOptionsSchema`, `deadOptionsSchema` | Standalone command option validation, also available on each descriptor. |
 | `ApxError` | Base class for every error apx-core throws on purpose. Carries a stable `code`, optional structured `data`, and a default English `message`. |
 | `isApxError(error)` | Structural type guard for `ApxError`; safe across duplicate copies of this package. |
 | `toDescribeView`, `describeTarget` | Build a filtered describe view from raw metadata or a caller-supplied connection. The caller owns authentication. |
@@ -36,7 +45,14 @@ Requires Node.js 22 or later.
 | `fetchClassInventory`, `scanBindings`, `fetchDependencyGraph`, `classifyClasses`, `MAX_ROUNDS` | Inventory and classify Apex using a caller-supplied structural `DeadConnection`. |
 | `renderDestructiveChanges`, `renderEmptyPackage`, `writeDestructiveManifest` | Pure XML rendering and destructive manifest writing with dry-run support. |
 
-Public types include `ApxErrorCode`, generation models (`Flavor`, `ArtifactId`,
+Public types include `CommandDescriptor`, `OrgRequirement`, `ReadUseCase`,
+`WriteUseCase`, `UseCase`, `UseCaseContext`, `ApxUseCaseContext`,
+`GenerationApplyContext`, `UiHint`, `ProgressEvent`, `PlannedFile`,
+`GenerationPreview`, `GenerationOutcome`, `DeadUseCaseResult`, `DeadReportOptions`,
+the ten inferred command options types (`GenerateOptions`, `GenerateSelectorOptions`,
+`GenerateDomainOptions`, `GenerateServiceOptions`, `GenerateUnitOfWorkOptions`,
+`GenerateSelectorMethodOptions`, `GenerateSelectorFieldInjectionOptions`,
+`GenerateActionOptions`, `GenerateCriteriaOptions`, `DeadOptions`), `ApxErrorCode`, generation models (`Flavor`, `ArtifactId`,
 `PlannedArtifact`, `GenerationPlan`, `EngineOptions`, `OverwritePolicy`,
 `GenerationManifest`, `AepCommandResult`), `SObjectDescribeView`, `ApiVersionOptions`,
 `AepLayout`, naming inputs and results, and dead-code models (`DeadConnection`,
@@ -57,7 +73,8 @@ try {
 }
 ```
 
-For usage and implementation details, see [AEP generation](docs/aep-generation.md)
+For usage and implementation details, see [command use cases](docs/command-use-cases.md),
+[AEP generation](docs/aep-generation.md)
 and [dead-code analysis](docs/dead-code-analysis.md).
 
 ## Errors
@@ -68,6 +85,9 @@ text is not and may be reworded in any release.
 
 | Code | Data | Meaning |
 | --- | --- | --- |
+| `org-required` | `{ commandId }` | A required-org use case received no connection. |
+| `nothing-selected` | — | Aggregate generation selected no artifact groups. |
+| `cancelled` | `{ created: string[] }` during apply; otherwise none | The caller aborted; completed writes remain on disk. |
 | `duplicate-path` | `{ relativePath }` | Two generation artifacts share a path. |
 | `file-exists` | `{ absolutePath }` | The error overwrite policy refuses an existing file. |
 | `write-failed` | `{ absolutePath, cause }` | An artifact or manifest could not be written. |
@@ -76,6 +96,10 @@ text is not and may be reworded in any release.
 | `test-pairing-invariant` | `{ name }` | A test-only class is missing its paired test in the manifest. |
 | `sobject-not-found` | `{ sobject }` | The describe request returned `NOT_FOUND`. |
 | `describe-failed` | `{ sobject, cause }` | Another describe failure occurred. |
+
+Invalid command options throw `ZodError`; `describeError` returns the first issue
+as a title and any remaining issues as detail. Aggregate `generate.plan` converts
+the empty-selection schema issue to `ApxError` with code `nothing-selected`.
 
 Describe failures retain the original error message. External query and project
 configuration errors propagate to the caller.

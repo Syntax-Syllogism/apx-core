@@ -2,9 +2,52 @@
 
 Import from `@syntax-syllogism/apx-core`. The generation pipeline separates
 metadata acquisition, naming, pure plan construction and filesystem execution.
-Callers own input validation, authentication, confirmations and presentation.
-There are no command use cases, options schemas, progress callbacks or
-cancellation signals in the current API.
+Callers own authentication, confirmations and printing. Command descriptors
+provide zod options schemas with UI hints; use cases validate options as well.
+See [command use cases](command-use-cases.md) for descriptors, org requirements
+and schema integration.
+
+## Command use cases
+
+`generate`, `generateSelector`, `generateDomain`, `generateUnitOfWork`,
+`generateService`, `generateSelectorMethod`, `generateSelectorFieldInjection`,
+`generateAction` and `generateCriteria` have `kind: 'write'`. Each has
+`descriptor`, `plan(conn, options, ctx?)` and `apply(conn, preview, ctx?)`.
+`conn` may be undefined for org-free commands; service uses an optional connection
+only for API version. Other object generators require it for describe.
+
+```ts
+import { generateSelector, renderGenerationPlan } from '@syntax-syllogism/apx-core';
+const options = generateSelector.descriptor.optionsSchema.parse({
+  sobject: 'Account', flavor: 'at4dx',
+});
+const preview = await generateSelector.plan(conn, options, {
+  projectRoot: '/path/to/project', signal, onProgress,
+});
+const lines = renderGenerationPlan(preview);
+// Present lines and let the caller choose overwrite or skip.
+const result = await generateSelector.apply(conn, preview, {
+  overwrite: 'skip', signal, onProgress,
+});
+```
+
+`plan` returns `{ commandId, baseDir, files, manualSteps? }`. Each file carries
+`artifactId`, relative and absolute paths, content, and `status: 'new' | 'exists'`.
+Duplicate paths fail before filesystem inspection. Apply does not trust status:
+`skip` uses exclusive creation so existing files are preserved, including ones
+that appeared after planning. A removed target can be created again.
+
+`apply` returns the existing `AepCommandResult` shape. Write progress reports
+`{ phase: 'write', done, total }` after each created or skipped file. Cancellation
+throws `ApxError('cancelled', ..., { created })`, leaving completed writes in place.
+An empty fflib unit-of-work plan returns only manual steps and writes no files.
+Aggregate fflib unit-of-work selection also includes the manual steps.
+
+Dry runs belong to callers: map the preview to `{ baseDir, created: [], skipped:
+[], wouldCreate: files.map(f => f.absolutePath), manualSteps? }`. The CLI's summary
+text differs from `renderGenerationPlan`, which lists paths and statuses for UI
+previews. Use `renderGenerationResult(outcome, { commandId })` for CLI summaries
+and command-specific binding reminders. Neither renderer prints anything.
 
 ## Describe, names and paths
 
@@ -79,7 +122,9 @@ not inspect existing files or enforce an overwrite policy. A real run checks
 existence and applies `overwrite` (the default), `skip`, or `error`. The `error`
 policy rejects an existing target before any writes start. Results use resolved
 paths, and `created` includes overwritten files. Writes create parent directories
-and run concurrently; a write failure can leave some artifacts on disk.
+and run sequentially; a write failure can leave some artifacts on disk. Optional
+`signal` and `onFile({ absolutePath, status, done, total })` support cancellation
+and per-file reporting.
 
 ## Project and API-version helpers
 

@@ -1,9 +1,10 @@
+/* eslint-disable no-await-in-loop -- Writes must finish in order for progress and partial cancellation. */
 import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { ApxError } from '../../errors.js';
 import type { EngineOptions, GenerationManifest, GenerationPlan, OverwritePolicy } from '../model/types.js';
 
-const ensureNoPlanCollisions = (plan: GenerationPlan): void => {
+export const ensureNoPlanCollisions = (plan: GenerationPlan): void => {
   const seen = new Set<string>();
   for (const artifact of plan.artifacts) {
     if (seen.has(artifact.relativePath)) {
@@ -57,25 +58,42 @@ export class GenerationEngine {
         });
     }
 
-    const skipped =
-      overwritePolicy === 'skip' ? existenceResults.filter((r) => r.exists).map((r) => r.artifact.absolutePath) : [];
-    const toWrite = overwritePolicy === 'skip' ? existenceResults.filter((r) => !r.exists) : existenceResults;
-
-    const created = await Promise.all(
-      toWrite.map(async ({ artifact }) => {
-        try {
-          await mkdir(dirname(artifact.absolutePath), { recursive: true });
-          await writeFile(artifact.absolutePath, artifact.content, 'utf8');
-          return artifact.absolutePath;
-        } catch (error) {
+    const created: string[] = [];
+    const skipped: string[] = [];
+    const checkCancellation = (): void => {
+      if (options.signal?.aborted) throw new ApxError('cancelled', 'Operation cancelled.', { created: [...created] });
+    };
+    for (const artifact of absoluteArtifacts) {
+      checkCancellation();
+      let status: 'created' | 'skipped' = 'created';
+      try {
+        await mkdir(dirname(artifact.absolutePath), { recursive: true });
+        // Exclusive creation enforces skip even if a file appears after planning or preflight.
+        await writeFile(artifact.absolutePath, artifact.content, {
+          encoding: 'utf8',
+          flag: overwritePolicy === 'skip' ? 'wx' : 'w',
+        });
+        created.push(artifact.absolutePath);
+      } catch (error) {
+        if (overwritePolicy === 'skip' && (error as NodeJS.ErrnoException).code === 'EEXIST') {
+          skipped.push(artifact.absolutePath);
+          status = 'skipped';
+        } else {
           const message = error instanceof Error ? error.message : String(error);
           throw new ApxError('write-failed', `Failed to write artifact "${artifact.absolutePath}": ${message}`, {
             absolutePath: artifact.absolutePath,
             cause: error,
           });
         }
-      })
-    );
+      }
+      options.onFile?.({
+        absolutePath: artifact.absolutePath,
+        status,
+        done: created.length + skipped.length,
+        total: absoluteArtifacts.length,
+      });
+    }
+    checkCancellation();
 
     return { created, skipped };
   }
