@@ -19,15 +19,20 @@ only for API version. Other object generators require it for describe.
 ```ts
 import { generateSelector, renderGenerationPlan } from '@syntax-syllogism/apx-core';
 const options = generateSelector.descriptor.optionsSchema.parse({
-  sobject: 'Account', flavor: 'at4dx',
+  sobject: 'Account',
+  flavor: 'at4dx',
 });
 const preview = await generateSelector.plan(conn, options, {
-  projectRoot: '/path/to/project', signal, onProgress,
+  projectRoot: '/path/to/project',
+  signal,
+  onProgress,
 });
 const lines = renderGenerationPlan(preview);
 // Present lines and let the caller choose overwrite or skip.
 const result = await generateSelector.apply(conn, preview, {
-  overwrite: 'skip', signal, onProgress,
+  overwrite: 'skip',
+  signal,
+  onProgress,
 });
 ```
 
@@ -77,15 +82,15 @@ and rendered `content`. Templates are internal TypeScript strings rendered with
 Eta, without runtime template-file reads. Plan construction performs no disk
 inspection or writes.
 
-| Builder | Output and flavor support |
-| --- | --- |
-| `buildSelectorPlan` | Implementation, interface, test and class metadata for both flavors; optional binding for AT4DX only. |
-| `buildDomainPlan` | Implementation, interface, test, trigger and metadata for both flavors; optional binding for AT4DX only. |
-| `buildServicePlan` | Facade, interface, implementation, exception, test and metadata; optional binding, for both flavors. |
-| `buildUnitOfWorkPlan` | AT4DX binding; returns an empty plan for fflib. |
-| `buildSelectorMethodPlan` | Class, test and metadata for both flavors. |
-| `buildCriteriaPlan`, `buildActionPlan` | Class, test, metadata and domain-process binding for AT4DX only. |
-| `buildFieldInjectionPlan` | Field set and selector inclusion binding for AT4DX only. |
+| Builder                                | Output and flavor support                                                                                |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `buildSelectorPlan`                    | Implementation, interface, test and class metadata for both flavors; optional binding for AT4DX only.    |
+| `buildDomainPlan`                      | Implementation, interface, test, trigger and metadata for both flavors; optional binding for AT4DX only. |
+| `buildServicePlan`                     | Facade, interface, implementation, exception, test and metadata; optional binding, for both flavors.     |
+| `buildUnitOfWorkPlan`                  | AT4DX binding; returns an empty plan for fflib.                                                          |
+| `buildSelectorMethodPlan`              | Class, test and metadata for both flavors.                                                               |
+| `buildCriteriaPlan`, `buildActionPlan` | Class, test, metadata and domain-process binding for AT4DX only.                                         |
+| `buildFieldInjectionPlan`              | Field set and selector inclusion binding for AT4DX only.                                                 |
 
 Requesting an unsupported template/flavor combination throws `template-missing`.
 For fflib selectors and domains, set `includeBinding: false`.

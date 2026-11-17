@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-11-17
+
 ### Fixed
 
 - `dead` accepts `deadOnly` without `destructiveManifest` again; it has no effect without a manifest, as in the pre-extraction `apx` plugin
 - The human dead-code report reproduces oclif's `ux.table` layout (box-drawn borders, Title Case headers, a blank line after each table) and no longer indents binding-source rows
+
+### Security
+
+- Resolved high-severity Dependabot alerts in the `minimatch` dependency used by `typescript-estree`
 
 ## [0.3.1] - 2026-10-01
 

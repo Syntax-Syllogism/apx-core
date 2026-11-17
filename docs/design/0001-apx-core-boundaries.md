@@ -19,10 +19,10 @@ also tied to the CLI's flag names through a vendored oclif manifest.
 
 apx-core is the shared engine for both front ends:
 
-| Consumer | How it uses apx-core |
-| --- | --- |
-| `apx` sf plugin | Imports the library. Commands become thin adapters that handle flags, prompts and printing. |
-| Apx VS Code extension | Imports the library into the extension host instead of spawning the CLI. |
+| Consumer              | How it uses apx-core                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| `apx` sf plugin       | Imports the library. Commands become thin adapters that handle flags, prompts and printing. |
+| Apx VS Code extension | Imports the library into the extension host instead of spawning the CLI.                    |
 
 It follows the common `-core` library pattern for sf plugins, as a single
 package rather than a monorepo.
@@ -59,16 +59,16 @@ optional command ID to preserve command-specific summaries and binding guidance.
 
 ## Decisions
 
-| # | Decision |
-| --- | --- |
-| D1 | apx-core holds the full domain library. Every command workflow is a callable use case. |
-| D2 | One repository and one npm package: `@syntax-syllogism/apx-core`. Split it only when a real consumer needs a subset. |
-| D3 | *(Not used.)* There is no SFDX-package consumer. |
-| D4 | Semantic versioning; consumers pin exact versions. Changes that count as major: rejecting previously valid input, changing a generated file's content or path, or changing a plan's shape. |
-| D5 | Errors are typed. `ApxError` carries a stable `code` and structured `data`. apx-core owns the default English text. |
-| D6 | Each use case exports a zod options schema with UI hints, and front ends build their inputs from it. The CLI keeps its own flags and has a test that maps them onto the same options. |
-| D7 | The VS Code extension runs in process only. It keeps no fallback that spawns the CLI. |
-| D8 | zod is the single source of truth for option shapes. |
+| #   | Decision                                                                                                                                                                                   |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| D1  | apx-core holds the full domain library. Every command workflow is a callable use case.                                                                                                     |
+| D2  | One repository and one npm package: `@syntax-syllogism/apx-core`. Split it only when a real consumer needs a subset.                                                                       |
+| D3  | _(Not used.)_ There is no SFDX-package consumer.                                                                                                                                           |
+| D4  | Semantic versioning; consumers pin exact versions. Changes that count as major: rejecting previously valid input, changing a generated file's content or path, or changing a plan's shape. |
+| D5  | Errors are typed. `ApxError` carries a stable `code` and structured `data`. apx-core owns the default English text.                                                                        |
+| D6  | Each use case exports a zod options schema with UI hints, and front ends build their inputs from it. The CLI keeps its own flags and has a test that maps them onto the same options.      |
+| D7  | The VS Code extension runs in process only. It keeps no fallback that spawns the CLI.                                                                                                      |
+| D8  | zod is the single source of truth for option shapes.                                                                                                                                       |
 
 ## Rules
 

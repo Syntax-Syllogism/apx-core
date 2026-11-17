@@ -9,18 +9,18 @@ does not delete or deploy anything.
 
 ## Commands and connections
 
-| Registry ID | CLI ID | Org requirement |
-| --- | --- | --- |
-| `generate` | `apx:generate` | required |
-| `generate-selector` | `apx:generate:selector` | required |
-| `generate-domain` | `apx:generate:domain` | required |
-| `generate-unitofwork` | `apx:generate:unitofwork` | required |
-| `generate-service` | `apx:generate:service` | optional |
-| `generate-selector-method` | `apx:generate:selector:method` | none |
-| `generate-selector-field-injection` | `apx:generate:selector:field-injection` | none |
-| `generate-action` | `apx:generate:action` | none |
-| `generate-criteria` | `apx:generate:criteria` | none |
-| `dead` | `apx:dead` | required |
+| Registry ID                         | CLI ID                                  | Org requirement |
+| ----------------------------------- | --------------------------------------- | --------------- |
+| `generate`                          | `apx:generate`                          | required        |
+| `generate-selector`                 | `apx:generate:selector`                 | required        |
+| `generate-domain`                   | `apx:generate:domain`                   | required        |
+| `generate-unitofwork`               | `apx:generate:unitofwork`               | required        |
+| `generate-service`                  | `apx:generate:service`                  | optional        |
+| `generate-selector-method`          | `apx:generate:selector:method`          | none            |
+| `generate-selector-field-injection` | `apx:generate:selector:field-injection` | none            |
+| `generate-action`                   | `apx:generate:action`                   | none            |
+| `generate-criteria`                 | `apx:generate:criteria`                 | none            |
+| `dead`                              | `apx:dead`                              | required        |
 
 The nine generation commands have `kind: 'write'` and `group: 'generate'`.
 They expose `plan(conn, options, ctx?)` and `apply(conn, preview, ctx?)`; see

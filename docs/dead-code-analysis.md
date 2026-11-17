@@ -42,12 +42,12 @@ tables become `null`.
 
 `scanBindings(conn)` queries these custom metadata sources concurrently:
 
-| Object | Class-name fields |
-| --- | --- |
-| `ApplicationFactory_ServiceBinding__mdt` | `To__c`, `BindingInterface__c` |
-| `ApplicationFactory_SelectorBinding__mdt` | `To__c` |
-| `ApplicationFactory_DomainBinding__mdt` | `To__c` |
-| `DomainProcessBinding__mdt` | `ClassToInject__c` |
+| Object                                    | Class-name fields              |
+| ----------------------------------------- | ------------------------------ |
+| `ApplicationFactory_ServiceBinding__mdt`  | `To__c`, `BindingInterface__c` |
+| `ApplicationFactory_SelectorBinding__mdt` | `To__c`                        |
+| `ApplicationFactory_DomainBinding__mdt`   | `To__c`                        |
+| `DomainProcessBinding__mdt`               | `ClassToInject__c`             |
 
 The returned `boundClasses` map uses trimmed, lowercase class names and binding
 labels as values. `reports` records source availability and record counts.
@@ -79,12 +79,12 @@ referenced only by tests, and orphaned dependency cycles, stopping at a fixed
 point or `MAX_ROUNDS` (50). A test is paired for removal only when it does not
 also reference surviving non-test candidates. Results are sorted by class name.
 
-| Result array | Meaning |
-| --- | --- |
-| `dead` | No surviving inbound references, or an orphaned dependency cycle. |
-| `testOnly` | Class referenced only by tests eligible for paired removal. |
-| `testOfDead` | Tests paired with a removed subject. |
-| `retained` | Test-only candidate blocked because a referrer test also covers surviving code. |
+| Result array | Meaning                                                                                                   |
+| ------------ | --------------------------------------------------------------------------------------------------------- |
+| `dead`       | No surviving inbound references, or an orphaned dependency cycle.                                         |
+| `testOnly`   | Class referenced only by tests eligible for paired removal.                                               |
+| `testOfDead` | Tests paired with a removed subject.                                                                      |
+| `retained`   | Test-only candidate blocked because a referrer test also covers surviving code.                           |
 | `suppressed` | Remaining bound classes, entry points and tests; `wouldBeDead` indicates no surviving inbound references. |
 
 These arrays do not enumerate every surviving class. `scanned` counts considered
@@ -95,17 +95,15 @@ the caller attaches scan reports. Findings depend on the supplied graph, symbol
 tables and known binding sources; consumers should present them for review.
 
 ```ts
-import {
-  classifyClasses,
-  fetchClassInventory,
-  fetchDependencyGraph,
-  scanBindings,
-} from '@syntax-syllogism/apx-core';
+import { classifyClasses, fetchClassInventory, fetchDependencyGraph, scanBindings } from '@syntax-syllogism/apx-core';
 
 // conn is a caller-supplied DeadConnection.
 const candidates = await fetchClassInventory(conn);
 const [graph, bindings] = await Promise.all([
-  fetchDependencyGraph(conn, candidates.map(({ id }) => id)),
+  fetchDependencyGraph(
+    conn,
+    candidates.map(({ id }) => id)
+  ),
   scanBindings(conn),
 ]);
 const result = classifyClasses({
